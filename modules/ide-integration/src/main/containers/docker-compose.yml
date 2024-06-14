@@ -1,7 +1,7 @@
 version: '3'
 services:
   keycloak:
-    image: jboss/keycloak:2.5.4.Final
+    image: plaxton/keycloak-alpine:2.5.4.Final
     environment:
       - KEYCLOAK_USER=admin
       - KEYCLOAK_PASSWORD=admin
@@ -52,3 +52,9 @@ services:
       - /tmp:/tmp
     ports:
       - "22222:22"
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 18081:8080
