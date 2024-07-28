@@ -45,9 +45,11 @@ func main() {
 
 	var mountPoint string
 	var servePath string
+	var grpcHost string
 
 	flag.StringVar(&mountPoint, "mount", "", "Mount point")
 	flag.StringVar(&servePath, "serve", "", "Path to serve")
+	flag.StringVar(&grpcHost, "host", "", "Path to GRPC host")
 	flag.Parse()
 
 	if mountPoint == "" || servePath == "" {
@@ -57,14 +59,14 @@ func main() {
 	mountPoint, err := filepath.Abs(mountPoint)
 	handleErrIfAny(err, "Invalid mount point")
 
-	server, err := grpcfs.FuseServer("127.0.0.1:19900", servePath, logger)
+	server, err := grpcfs.FuseServer(grpcHost, servePath, logger)
 	handleErrIfAny(err, "Error starting fuse server")
 
 	cfg := &fuse.MountConfig{
 		FSName:      "grpcFS",
 		Subtype:     "airavata",
 		VolumeName:  "GRPC FS - Airavata",
-		ReadOnly:    false,
+		ReadOnly:    true,
 		ErrorLogger: logger,
 	}
 	mfs, err := fuse.Mount(mountPoint, server, cfg)

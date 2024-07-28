@@ -56,6 +56,7 @@ func FuseServer(
 		return nil, err
 	}
 	client := pb.NewFuseServiceClient(conn)
+	logger.Print("created fuse client")
 
 	if _, err = getStat(client, context.TODO(), root); err != nil {
 		logger.Print("error in getStat() for FS root", err)

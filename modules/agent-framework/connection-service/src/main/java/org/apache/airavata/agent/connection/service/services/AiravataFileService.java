@@ -11,9 +11,8 @@ import org.apache.airavata.agent.connection.service.models.DirectoryInfo;
 import org.apache.airavata.agent.connection.service.models.ExperimentStorageResponse;
 import org.apache.airavata.agent.connection.service.models.FileInfo;
 import org.apache.airavata.api.Airavata;
-import org.apache.airavata.fuse.DirEntry;
-import org.apache.airavata.fuse.ReadDirReq;
-import org.apache.airavata.fuse.ReadDirRes;
+import org.apache.airavata.fuse.*;
+import org.apache.airavata.model.security.AuthzToken;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +24,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.time.Instant;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
@@ -46,6 +47,11 @@ public class AiravataFileService {
     }
 
     public void handleReadDirRequest(ReadDirReq request, StreamObserver<ServerMessage> responseObserver) {
+        RPCContext context = request.getContext();
+        AuthzToken authzToken = new AuthzToken();
+        authzToken.setAccessToken(context.getAccessToken());
+        authzToken.setClaimsMap(Map.of("userName", "pjaya001@odu.edu", "gatewayID", "testdrive"));
+
         Airavata.Client airavataClient = airavataService.airavata();
         String fusePath = request.getName();
 
@@ -53,7 +59,7 @@ public class AiravataFileService {
 
         try {
             if ("/".equals(fusePath)) {
-                List<String> experimentIds = airavataService.getUserExperimentIDs(airavataClient);
+                List<String> experimentIds = airavataService.getUserExperimentIDs(airavataClient, authzToken);
 
                 // Handle root directory
                 for (String expId : experimentIds) {
@@ -97,6 +103,19 @@ public class AiravataFileService {
         }
 
         responseObserver.onNext(ServerMessage.newBuilder().setReadDirRes(readDirResBuilder.build()).build());
+        responseObserver.onCompleted();
+    }
+
+    public void handleFileInfoRequest(FileInfoReq request, StreamObserver<ServerMessage> responseObserver) {
+        org.apache.airavata.fuse.FileInfo.Builder builder = org.apache.airavata.fuse.FileInfo.newBuilder()
+                .setName("/")
+                .setIsDir(true)
+                .setModTime(Timestamp.newBuilder()
+                        .setSeconds(Instant.now().getEpochSecond())
+                        .setNanos(Instant.now().getNano())
+                        .build());
+
+        responseObserver.onNext(ServerMessage.newBuilder().setFileInfoRes(FileInfoRes.newBuilder().setResult(builder.build()).build()).build());
         responseObserver.onCompleted();
     }
 

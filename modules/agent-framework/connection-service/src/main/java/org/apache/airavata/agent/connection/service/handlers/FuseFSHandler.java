@@ -4,26 +4,62 @@ import com.google.protobuf.ByteString;
 import com.google.protobuf.Timestamp;
 import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.server.service.GrpcService;
+import org.apache.airavata.agent.ServerMessage;
+import org.apache.airavata.agent.connection.service.services.AiravataFileService;
 import org.apache.airavata.fuse.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.nio.charset.Charset;
+import java.util.Map;
 
 @GrpcService
 public class FuseFSHandler extends FuseServiceGrpc.FuseServiceImplBase {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(FuseFSHandler.class);
 
+    private final AiravataFileService airavataFileService;
+
+    public FuseFSHandler(AiravataFileService airavataFileService) {
+        this.airavataFileService = airavataFileService;
+    }
+
+    private final Map<String, FileInfo> fileTree = Map.ofEntries(
+            Map.entry("/test", FileInfo.newBuilder()
+                    .setName("test")
+                    .setSize(512)
+                    .setIno(2)
+                    .setIsDir(true)
+                    .setMode(777)
+                    .setModTime(Timestamp.newBuilder().setSeconds(System.currentTimeMillis() / 1000).build())
+                    .build()),
+            Map.entry("/pass.txt", FileInfo.newBuilder()
+                    .setName("pass.txt")
+                    .setSize(1024)
+                    .setIno(2)
+                    .setIsDir(false)
+                    .setMode(777)
+                    .setModTime(Timestamp.newBuilder().setSeconds(System.currentTimeMillis() / 1000).build())
+                    .build()),
+            Map.entry("/case.txt", FileInfo.newBuilder()
+                    .setName("case.txt")
+                    .setSize(1024)
+                    .setIno(3)
+                    .setIsDir(false)
+                    .setMode(777)
+                    .setModTime(Timestamp.newBuilder().setSeconds(System.currentTimeMillis() / 1000).build())
+                    .build())
+    );
+
     @Override
     public void statFs(StatFsReq request, StreamObserver<StatFsRes> responseObserver) {
         responseObserver.onNext(StatFsRes.newBuilder().setResult(StatFs.newBuilder()
-                .setBlocks(100)
-                .setBlocksAvailable(100)
-                .setBlocksFree(100)
-                .setInodes(1)
-                .setIoSize(10)
+                .setBlocks(1000)
+                .setBlocksAvailable(1000)
+                .setBlocksFree(1000)
+                .setInodes(100)
+                .setIoSize(100)
                 .setBlockSize(1000)
                 .build()).build());
         responseObserver.onCompleted();
@@ -32,17 +68,9 @@ public class FuseFSHandler extends FuseServiceGrpc.FuseServiceImplBase {
     @Override
     public void fileInfo(FileInfoReq request, StreamObserver<FileInfoRes> responseObserver) {
         LOGGER.info("Calling fileInfo {}", request.getName());
-
-        File f = new File(request.getName());
-        responseObserver.onNext(FileInfoRes.newBuilder()
-                .setResult(FileInfo.newBuilder()
-                        .setName(request.getName())
-                        .setSize(128)
-                        .setIno(2)
-                        .setIsDir(true)
-                        .setMode(0x777)
-                        .setModTime(Timestamp.newBuilder().setSeconds(System.currentTimeMillis() / 1000).build())
-                        .build()).build());
+        FileInfo file = fileTree.get(request.getName());
+//        airavataFileService.handleFileInfoRequest(fileInfo, responseObserver);
+        responseObserver.onNext(FileInfoRes.newBuilder().setResult(file).build());
         responseObserver.onCompleted();
     }
 
@@ -63,18 +91,23 @@ public class FuseFSHandler extends FuseServiceGrpc.FuseServiceImplBase {
     @Override
     public void readDir(ReadDirReq request, StreamObserver<ReadDirRes> responseObserver) {
         LOGGER.info("Calling readDir {}", request.getName());
-        responseObserver.onNext(ReadDirRes.newBuilder().addResult(DirEntry.newBuilder()
-                .setIsDir(false)
-                .setName("file1")
-                .setFileMode(777)
-                .setInfo(FileInfo.newBuilder()
-                        .setModTime(Timestamp.newBuilder().setSeconds(System.currentTimeMillis()/1000).build())
-                        .setName("file2")
-                        .setIno(100)
-                        .setSize(12000)
+//        airavataFileService.handleReadDirRequest(readDirReq, responseObserver);
+        responseObserver.onNext(ReadDirRes.newBuilder().addResult(
+                DirEntry.newBuilder()
+                    .setIsDir(false)
+                    .setName("test.txt")
+                    .setFileMode(777)
+                    .setInfo(fileTree.get("/test.txt"))
+                    .build()
+                ).addResult(
+                DirEntry.newBuilder()
                         .setIsDir(false)
-                        .setMode(777).build()).build()).build());
-
+                        .setName("case.txt")
+                        .setFileMode(777)
+                        .setInfo(fileTree.get("/case.txt"))
+                        .build()
+                ).build()
+        );
         responseObserver.onCompleted();
     }
 

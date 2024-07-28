@@ -8,6 +8,7 @@ import org.apache.airavata.agent.connection.service.models.TerminateAgentRespons
 import org.apache.airavata.agent.connection.service.services.AiravataService;
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupResourceProfile;
+import org.apache.airavata.model.application.io.DataType;
 import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.experiment.ExperimentType;
@@ -134,6 +135,8 @@ public class ExperimentHandler {
         experimentModel.setUserConfigurationData(userConfigurationDataModel);
 
         List<InputDataObjectType> applicationInputs = airavataClient.getApplicationInputs(UserContext.authzToken(), appInterfaceId);
+        InputDataObjectType inputDataObjectType = new InputDataObjectType();
+        inputDataObjectType.setType(DataType.URI_COLLECTION);
         List<InputDataObjectType> experimentInputs = applicationInputs.stream()
                 .peek(input -> {
                     if ("agent_id".equals(input.getName())) {

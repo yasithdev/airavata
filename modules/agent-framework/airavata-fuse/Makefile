@@ -22,4 +22,7 @@ run_server:
 	bin/server
 
 run_client:
-	bin/client -mount /tmp/fuse -serve $$PWD/data
+	bin/client -mount /tmp/fuse -serve /test -host "host.docker.internal:19900"
+
+run_client_int:
+	bin/client -mount /tmp/fuse -serve /workspaces/airavata -host "127.0.0.1:50000"
