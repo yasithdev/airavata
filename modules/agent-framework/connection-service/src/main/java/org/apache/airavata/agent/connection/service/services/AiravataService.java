@@ -8,6 +8,7 @@ import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupResourcePr
 import org.apache.airavata.model.error.AiravataClientException;
 import org.apache.airavata.model.experiment.ExperimentSearchFields;
 import org.apache.airavata.model.experiment.ExperimentSummaryModel;
+import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.workspace.Project;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
@@ -83,14 +84,14 @@ public class AiravataService {
                 .orElseThrow(() -> new RuntimeException("Could not find a Compute Resource in the Default group resource profile for the user: " + UserContext.username()));
     }
 
-    public List<String> getUserExperimentIDs(Airavata.Client airavataClient) throws TException {
+    public List<String> getUserExperimentIDs(Airavata.Client airavataClient, AuthzToken token) throws TException {
         int limit = 100;
         Map<ExperimentSearchFields, String> filters = Map.of(ExperimentSearchFields.PROJECT_ID, extractDefaultProjectId(airavataClient));
 
         return Stream.iterate(0, offset -> offset + limit)
                 .map(offset -> {
                     try {
-                        return airavataClient.searchExperiments(UserContext.authzToken(), UserContext.gatewayId(), UserContext.username(), filters, limit, offset);
+                        return airavataClient.searchExperiments(token, "testdrive", "pjaya001@odu.edu", filters, limit, offset);
                     } catch (TException e) {
                         // Handle exception gracefully
                         throw new RuntimeException(e);
