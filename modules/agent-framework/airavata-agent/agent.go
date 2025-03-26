@@ -11,6 +11,7 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"net/url"
 	"os"
 	"os/exec"
 	"strings"
@@ -212,9 +213,20 @@ EOF`, workingDir, agentId, code)
 
 				log.Printf("[agent.go] Execution ID: %s, Session ID: %s, Code: %s", executionId, sessionId, code)
 
-				url := "http://127.0.0.1:15000/start"
-				client := &http.Client{}
-				req, err := http.NewRequest("GET", url, nil)
+				unixSock := os.Getenv("KERNEL_SOCK")
+				client := &http.Client{
+					Transport: &http.Transport{
+						DialContext: func(_ context.Context, _, _ string) (net.Conn, error) {
+							return net.Dial("unix", unixSock)
+						},
+					},
+				}
+				startUrl := &url.URL{
+					Scheme: "http",
+					Host:   "localhost",
+					Path:   "/start",
+				}
+				req, err := http.NewRequest("GET", startUrl.String(), nil)
 				if err != nil {
 					log.Printf("[agent.go] Failed to create the request start jupyter kernel: %v", err)
 
@@ -224,7 +236,6 @@ EOF`, workingDir, agentId, code)
 						log.Printf("[agent.go] Failed to send jupyter execution result to server: %v", err)
 					}
 					return
-
 				}
 
 				log.Printf("[agent.go] Sending the jupyter kernel start request to server...")
@@ -271,7 +282,11 @@ EOF`, workingDir, agentId, code)
 				}
 
 				log.Printf("[agent.go] Starting to marshal execution request JSON data...")
-				url = "http://127.0.0.1:15000/execute"
+				executeUrl := &url.URL{
+					Scheme: "http",
+					Host:   "localhost",
+					Path:   "/execute",
+				}
 				data := map[string]string{
 					"code":        code,
 					"executionId": executionId,
@@ -291,7 +306,7 @@ EOF`, workingDir, agentId, code)
 				}
 				log.Printf("[agent.go] Successful marshaling the JSON data")
 
-				req, err = http.NewRequest("POST", url, bytes.NewBuffer(jsonData))
+				req, err = http.NewRequest("POST", executeUrl.String(), bytes.NewBuffer(jsonData))
 				if err != nil {
 					log.Printf("[agent.go] Failed to create the request run jupyter kernel: %v", err)
 
@@ -304,9 +319,6 @@ EOF`, workingDir, agentId, code)
 
 				}
 				req.Header.Set("Content-Type", "application/json")
-
-				client = &http.Client{}
-
 				resp, err = client.Do(req)
 				if err != nil {
 					log.Printf("[agent.go] Failed to send the request run jupyter kernel: %v", err)
