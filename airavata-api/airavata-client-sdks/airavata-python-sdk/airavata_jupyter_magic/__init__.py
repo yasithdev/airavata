@@ -11,7 +11,7 @@ from typing import NamedTuple
 
 import jwt
 import requests
-from device_auth import DeviceFlowAuthenticator
+from .device_auth import DeviceFlowAuthenticator
 from IPython.core.getipython import get_ipython
 from IPython.core.interactiveshell import ExecutionInfo, ExecutionResult
 from IPython.core.magic import register_cell_magic, register_line_magic
@@ -24,7 +24,7 @@ from IPython.display import HTML, Image, display
 class RequestedRuntime:
     cluster: str
     cpus: int
-    memory: int
+    memory: int | None
     walltime: int
     queue: str
     group: str
@@ -57,7 +57,7 @@ RuntimeInfo = NamedTuple('RuntimeInfo', [
     ('cluster', str),
     ('queue', str),
     ('cpus', int),
-    ('memory', int),
+    ('memory', int | None),
     ('walltime', int),
     ('gateway_id', str),
     ('group', str),
@@ -186,7 +186,7 @@ def submit_agent_job(
     app_name: str,
     cluster: str,
     cpus: int,
-    memory: int,
+    memory: int | None,
     walltime: int,
     queue: str,
     group: str,
@@ -609,7 +609,7 @@ def request_runtime(line: str):
     )
     p.add_argument("--cluster", type=str, help="cluster", required=True)
     p.add_argument("--cpus", type=int, help="CPU cores", required=True)
-    p.add_argument("--memory", type=int, help="memory (MB)", required=True)
+    p.add_argument("--memory", type=int, help="memory (MB)", required=False)
     p.add_argument("--walltime", type=int, help="time (mins)", required=True)
     p.add_argument("--queue", type=str, help="resource queue", required=True)
     p.add_argument("--group", type=str, help="resource group", required=True)
