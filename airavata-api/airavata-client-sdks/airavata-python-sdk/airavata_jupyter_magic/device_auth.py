@@ -30,16 +30,15 @@ class DeviceFlowAuthenticator:
         data = response.json()
         self.device_code = data.get("device_code")
         self.interval = data.get("interval", 5)
-        print(f"Please authenticate by visiting: {data.get('verification_uri_complete')}", flush=True)
 
         # Step 2: Poll for the token
-        self.poll_for_token()
+        self.poll_for_token(data.get('verification_uri_complete'))
 
-    def poll_for_token(self):
+    def poll_for_token(self, url):
         assert self.interval is not None
         token_url = f"{self.auth_server_url}/realms/{self.realm}/protocol/openid-connect/token"
         counter = 0
-        with self.console.status("Waiting for authentication...") as status:
+        with self.console.status(f"Authenticate via link: [link={url}]{url}[/link]", refresh_per_second=3) as status:
             while True:
                 response = requests.post(token_url, data={
                     "client_id": self.client_id,
@@ -54,7 +53,7 @@ class DeviceFlowAuthenticator:
                     break
                 elif response.status_code == 400 and response.json().get("error") == "authorization_pending":
                     counter += 1
-                    status.update(f"Waiting for authentication ({counter})...")
+                    status.update(f"Authenticate via link: [link={url}]{url}[/link] ({counter})")
                 else:
                     print(f"Error during authentication: {response.status_code} - {response.text}")
                     break

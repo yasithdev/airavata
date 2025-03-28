@@ -148,14 +148,14 @@ def is_runtime_ready(access_token: str, rt: RuntimeInfo, rt_name: str) -> tuple[
     url = f"{api_base_url}/api/v1/agent/{rt.agentId}"
     res = requests.get(url)
     code = res.status_code
-    astate = "DOWN"
+    astate = "AGENT_CREATED"
     if code == 202:
         data: dict = res.json()
         if data.get("agentUp", False):
-            astate = "UP"
+            astate = "READY"
     else:
         print(f"[{code}] Runtime status check failed: {res.text}")
-    return astate == "UP", f"AGENT_{astate}"
+    return astate == "READY", astate
 
 
 def get_experiment_state(experiment_id: str, headers: dict) -> tuple[ProcessState, str]:
