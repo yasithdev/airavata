@@ -1,6 +1,8 @@
 import requests
 import time
 import os
+from rich.console import Console
+
 # Load environment variables from .env file
 
 class DeviceFlowAuthenticator:
@@ -14,6 +16,7 @@ class DeviceFlowAuthenticator:
 
         self.device_code = None
         self.interval = None
+        self.console = Console()
 
     def login(self):
         # Step 1: Request device and user code
@@ -21,15 +24,13 @@ class DeviceFlowAuthenticator:
         response = requests.post(auth_device_url, data={"client_id": self.client_id, "scope": "openid"})
 
         if response.status_code != 200:
-            print(f"Error in device authorization request: {response.status_code} - {response.text}")
+            print(f"Error in authentication request: {response.status_code} - {response.text}", flush=True)
             return
 
         data = response.json()
         self.device_code = data.get("device_code")
         self.interval = data.get("interval", 5)
-
-        print(f"User code: {data.get('user_code')}")
-        print(f"Please authenticate by visiting: {data.get('verification_uri_complete')}")
+        print(f"Please authenticate by visiting: {data.get('verification_uri_complete')}", flush=True)
 
         # Step 2: Poll for the token
         self.poll_for_token()
@@ -37,23 +38,26 @@ class DeviceFlowAuthenticator:
     def poll_for_token(self):
         assert self.interval is not None
         token_url = f"{self.auth_server_url}/realms/{self.realm}/protocol/openid-connect/token"
-        while True:
-            response = requests.post(token_url, data={
-                "client_id": self.client_id,
-                "grant_type": "urn:ietf:params:oauth:grant-type:device_code",
-                "device_code": self.device_code
-            })
-
-            if response.status_code == 200:
-                data = response.json()
-                access_token = data.get("access_token")
-                print(f"Received access token")
-                os.environ['CS_ACCESS_TOKEN'] = access_token
-                break
-            elif response.status_code == 400 and response.json().get("error") == "authorization_pending":
-                print("Authorization pending, retrying...")
-            else:
-                print(f"Error in token request: {response.status_code} - {response.text}")
-                break
-
-            time.sleep(self.interval)
+        counter = 0
+        with self.console.status("Waiting for authentication...") as status:
+            while True:
+                response = requests.post(token_url, data={
+                    "client_id": self.client_id,
+                    "grant_type": "urn:ietf:params:oauth:grant-type:device_code",
+                    "device_code": self.device_code
+                })
+                if response.status_code == 200:
+                    data = response.json()
+                    access_token = data.get("access_token")
+                    print(f"Authenticated.")
+                    os.environ['CS_ACCESS_TOKEN'] = access_token
+                    break
+                elif response.status_code == 400 and response.json().get("error") == "authorization_pending":
+                    counter += 1
+                    status.update(f"Waiting for authentication ({counter})...")
+                else:
+                    print(f"Error during authentication: {response.status_code} - {response.text}")
+                    break
+                time.sleep(self.interval)
+            status.stop()
+        self.console.clear()
