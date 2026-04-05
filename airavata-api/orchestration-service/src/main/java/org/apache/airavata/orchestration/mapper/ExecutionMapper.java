@@ -19,9 +19,9 @@
 */
 package org.apache.airavata.orchestration.mapper;
 
+import org.apache.airavata.compute.model.QueueStatusEntity;
 import org.apache.airavata.iam.model.GatewayEntity;
 import org.apache.airavata.iam.model.GatewayUsageReportingCommandEntity;
-import org.apache.airavata.compute.model.QueueStatusEntity;
 import org.apache.airavata.mapper.CommonMapperConversions;
 import org.apache.airavata.model.application.io.proto.InputDataObjectType;
 import org.apache.airavata.model.application.io.proto.OutputDataObjectType;

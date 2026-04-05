@@ -78,8 +78,7 @@ public class AiravataArmeriaConfig {
             if ("*".equals(allowedOrigins)) {
                 corsBuilder = CorsService.builderForAnyOrigin();
             } else {
-                corsBuilder = CorsService.builder(allowedOrigins.split(","))
-                        .allowCredentials();
+                corsBuilder = CorsService.builder(allowedOrigins.split(",")).allowCredentials();
             }
             builder.decorator(corsBuilder
                     .allowRequestMethods(

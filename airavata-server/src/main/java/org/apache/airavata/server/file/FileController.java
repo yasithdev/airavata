@@ -61,8 +61,7 @@ public class FileController {
 
     @Get("regex:^/list/(?<live>[^/]+)/(?<processId>[^/]+)/(?<subPath>.+)$")
     @ProducesJson
-    public Object listFiles(@Param String live, @Param String processId, @Param String subPath)
-            throws Exception {
+    public Object listFiles(@Param String live, @Param String processId, @Param String subPath) throws Exception {
         String relPath = subPath.startsWith("/") ? subPath : "/" + subPath;
         try {
             var info = fileService.getInfo(processId, relPath);
@@ -91,7 +90,9 @@ public class FileController {
                     .build();
         } catch (Exception e) {
             logger.error("Failed to download file {} from process {}", relPath, processId, e);
-            return HttpResponse.of(HttpStatus.INTERNAL_SERVER_ERROR, MediaType.PLAIN_TEXT_UTF_8,
+            return HttpResponse.of(
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                    MediaType.PLAIN_TEXT_UTF_8,
                     "An internal server error occurred: " + e.getMessage());
         }
     }
@@ -100,10 +101,7 @@ public class FileController {
     @Consumes(MediaTypeNames.MULTIPART_FORM_DATA)
     @ProducesJson
     public HttpResponse uploadFile(
-            @Param String live,
-            @Param String processId,
-            @Param String subPath,
-            @Param MultipartFile file) {
+            @Param String live, @Param String processId, @Param String subPath, @Param MultipartFile file) {
         String relPath = subPath.startsWith("/") ? subPath : "/" + subPath;
         try {
             String name = file.filename();
@@ -120,7 +118,9 @@ public class FileController {
                     .build());
         } catch (Exception e) {
             logger.error("Failed to upload file {} to process {}", relPath, processId, e);
-            return HttpResponse.of(HttpStatus.INTERNAL_SERVER_ERROR, MediaType.PLAIN_TEXT_UTF_8,
+            return HttpResponse.of(
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                    MediaType.PLAIN_TEXT_UTF_8,
                     "An internal server error occurred: " + e.getMessage());
         }
     }
