@@ -35,4 +35,5 @@ public interface RegistryHandler
                 ComputeRegistry,
                 ResourceProfileRegistry,
                 StorageRegistry,
-                GatewayRegistry {}
+                GatewayRegistry,
+                QueueStatusRegistry {}

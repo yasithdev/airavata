@@ -114,7 +114,7 @@ public class GroupManagerGrpcService extends GroupManagerServiceGrpc.GroupManage
         try {
             RequestContext ctx = GrpcRequestContext.current();
             List<UserGroupEntity> groups =
-                    sharingHandler.getAllMemberGroupsForUser(ctx.getGatewayId(), request.getUserName());
+                    sharingHandler.getAllMemberGroupEntitiesForUser(ctx.getGatewayId(), request.getUserName());
             GetAllGroupsUserBelongsResponse.Builder builder = GetAllGroupsUserBelongsResponse.newBuilder();
             groups.forEach(g -> builder.addGroups(toGroupModel(g)));
             observer.onNext(builder.build());

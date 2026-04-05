@@ -17,7 +17,7 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.storage.model;
+package org.apache.airavata.research.model;
 
 import jakarta.persistence.*;
 import java.io.Serializable;

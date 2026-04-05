@@ -27,14 +27,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @Configuration
 @ComponentScan(basePackages = "org.apache.airavata.research")
-@EntityScan(
-        basePackages = {
-            "org.apache.airavata.research",
-            "org.apache.airavata.workflow.model",
-            "org.apache.airavata.research.model",
-            "org.apache.airavata.research.model",
-            "org.apache.airavata.research.model"
-        })
+@EntityScan(basePackages = "org.apache.airavata.research")
 @EnableJpaRepositories(basePackages = "org.apache.airavata.research")
 @EnableJpaAuditing
 public class ResearchServiceConfig {}

@@ -551,7 +551,7 @@ public class SharingGrpcService extends SharingServiceGrpc.SharingServiceImplBas
     public void getAllMemberGroupsForUser(
             GetAllMemberGroupsForUserRequest request, StreamObserver<GetAllMemberGroupsForUserResponse> observer) {
         try {
-            var groups = sharingHandler.getAllMemberGroupsForUser(request.getDomainId(), request.getUserId());
+            var groups = sharingHandler.getAllMemberGroupEntitiesForUser(request.getDomainId(), request.getUserId());
             var builder = GetAllMemberGroupsForUserResponse.newBuilder();
             groups.forEach(g -> builder.addGroups(toProtoUserGroup(g)));
             observer.onNext(builder.build());

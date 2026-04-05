@@ -24,7 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.airavata.iam.mapper.ProfileMapper;
-import org.apache.airavata.iam.model.TenantGatewayEntity;
+import org.apache.airavata.iam.model.GatewayEntity;
 import org.apache.airavata.iam.util.QueryConstants;
 import org.apache.airavata.model.workspace.proto.Gateway;
 import org.apache.airavata.model.workspace.proto.GatewayApprovalStatus;
@@ -36,21 +36,21 @@ import org.springframework.stereotype.Component;
  * Created by goshenoy on 3/8/17.
  */
 @Component
-public class TenantProfileRepository extends AbstractRepository<Gateway, TenantGatewayEntity, String> {
+public class TenantProfileRepository extends AbstractRepository<Gateway, GatewayEntity, String> {
 
     private static final Logger logger = LoggerFactory.getLogger(TenantProfileRepository.class);
 
     public TenantProfileRepository() {
-        super(Gateway.class, TenantGatewayEntity.class);
+        super(Gateway.class, GatewayEntity.class);
     }
 
     @Override
-    protected Gateway toModel(TenantGatewayEntity entity) {
+    protected Gateway toModel(GatewayEntity entity) {
         return ProfileMapper.INSTANCE.gatewayToModel(entity);
     }
 
     @Override
-    protected TenantGatewayEntity toEntity(Gateway model) {
+    protected GatewayEntity toEntity(Gateway model) {
         return ProfileMapper.INSTANCE.gatewayToEntity(model);
     }
 

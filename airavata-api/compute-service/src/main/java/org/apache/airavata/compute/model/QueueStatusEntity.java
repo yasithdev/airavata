@@ -17,7 +17,7 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.iam.model;
+package org.apache.airavata.compute.model;
 
 import jakarta.persistence.*;
 import java.io.Serializable;

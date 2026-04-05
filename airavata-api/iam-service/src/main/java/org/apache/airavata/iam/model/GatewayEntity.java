@@ -91,6 +91,9 @@ public class GatewayEntity implements Serializable {
     @Column(name = "REQUESTER_USERNAME")
     private String requesterUsername;
 
+    @Column(name = "AIRAVATA_INTERNAL_GATEWAY_ID")
+    private String airavataInternalGatewayId;
+
     public GatewayEntity() {}
 
     public String getGatewayId() {
@@ -243,5 +246,13 @@ public class GatewayEntity implements Serializable {
 
     public void setRequestCreationTime(Timestamp requestCreationTime) {
         this.requestCreationTime = requestCreationTime;
+    }
+
+    public String getAiravataInternalGatewayId() {
+        return airavataInternalGatewayId;
+    }
+
+    public void setAiravataInternalGatewayId(String airavataInternalGatewayId) {
+        this.airavataInternalGatewayId = airavataInternalGatewayId;
     }
 }

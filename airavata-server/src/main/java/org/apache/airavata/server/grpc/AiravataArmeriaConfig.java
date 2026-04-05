@@ -21,6 +21,7 @@ package org.apache.airavata.server.grpc;
 
 import com.linecorp.armeria.common.HttpMethod;
 import com.linecorp.armeria.server.cors.CorsService;
+import com.linecorp.armeria.server.cors.CorsServiceBuilder;
 import com.linecorp.armeria.server.docs.DocService;
 import com.linecorp.armeria.server.grpc.GrpcService;
 import com.linecorp.armeria.spring.ArmeriaServerConfigurator;
@@ -31,6 +32,9 @@ import org.apache.airavata.config.ConditionalOnServer;
 import org.apache.airavata.research.config.ResearchServiceConfig;
 import org.apache.airavata.server.file.FileController;
 import org.apache.airavata.server.grpc.config.GrpcAuthInterceptor;
+import org.apache.airavata.server.grpc.config.HttpAuthDecorator;
+import org.apache.airavata.server.kafka.KafkaProxyService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -56,7 +60,9 @@ public class AiravataArmeriaConfig {
 
     @Bean
     public ArmeriaServerConfigurator grpcServerConfigurator(
-            List<BindableService> grpcServices, GrpcAuthInterceptor authInterceptor) {
+            List<BindableService> grpcServices,
+            GrpcAuthInterceptor authInterceptor,
+            @Value("${airavata.cors.allowed-origins:*}") String allowedOrigins) {
         return builder -> {
             GrpcService grpcService = GrpcService.builder()
                     .addServices(grpcServices)
@@ -68,16 +74,35 @@ public class AiravataArmeriaConfig {
 
             builder.serviceUnder("/docs", DocService.builder().build());
 
-            builder.decorator(CorsService.builderForAnyOrigin()
+            CorsServiceBuilder corsBuilder;
+            if ("*".equals(allowedOrigins)) {
+                corsBuilder = CorsService.builderForAnyOrigin();
+            } else {
+                corsBuilder = CorsService.builder(allowedOrigins.split(","))
+                        .allowCredentials();
+            }
+            builder.decorator(corsBuilder
                     .allowRequestMethods(
-                            HttpMethod.GET, HttpMethod.POST, HttpMethod.PUT, HttpMethod.DELETE, HttpMethod.OPTIONS)
+                            HttpMethod.GET,
+                            HttpMethod.POST,
+                            HttpMethod.PUT,
+                            HttpMethod.DELETE,
+                            HttpMethod.PATCH,
+                            HttpMethod.OPTIONS)
                     .allowRequestHeaders("Authorization", "Content-Type", "X-Claims")
                     .newDecorator());
         };
     }
 
     @Bean
-    public ArmeriaServerConfigurator fileServerConfigurator(FileController fileController) {
-        return builder -> builder.annotatedService("/api/v1/files", fileController);
+    public ArmeriaServerConfigurator fileServerConfigurator(
+            FileController fileController, HttpAuthDecorator httpAuthDecorator) {
+        return builder -> builder.annotatedService("/api/v1/files", fileController, httpAuthDecorator);
+    }
+
+    @Bean
+    public ArmeriaServerConfigurator kafkaServerConfigurator(
+            KafkaProxyService kafkaProxyService, HttpAuthDecorator httpAuthDecorator) {
+        return builder -> builder.annotatedService("/api/v1/kafka", kafkaProxyService, httpAuthDecorator);
     }
 }

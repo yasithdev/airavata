@@ -78,7 +78,7 @@ under the License.
         <groupId>io.github.ascopes</groupId>
         <artifactId>protobuf-maven-plugin</artifactId>
         <configuration>
-          <protocVersion>3.25.8</protocVersion>
+          <protocVersion>4.29.5</protocVersion>
           <sourceDirectories>
             <sourceDirectory>${project.basedir}/src/main/proto</sourceDirectory>
           </sourceDirectories>

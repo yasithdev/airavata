@@ -17,28 +17,27 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.storage.model;
+package org.apache.airavata.research.model;
 
 import java.io.Serializable;
 
 /**
- * The primary key class for the data_product_metadata database table.
+ * The primary key class for the data_replica_metadata database table.
  */
-public class DataProductMetadataPK implements Serializable {
-    // default serial version id, required for serializable classes.
+public class DataReplicaMetadataPK implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    private String productUri;
+    private String replicaId;
     private String metadataKey;
 
-    public DataProductMetadataPK() {}
+    public DataReplicaMetadataPK() {}
 
-    public String getProductUri() {
-        return productUri;
+    public String getReplicaId() {
+        return replicaId;
     }
 
-    public void setProductUri(String productUri) {
-        this.productUri = productUri;
+    public void setReplicaId(String replicaId) {
+        this.replicaId = replicaId;
     }
 
     public String getMetadataKey() {
@@ -53,17 +52,17 @@ public class DataProductMetadataPK implements Serializable {
         if (this == other) {
             return true;
         }
-        if (!(other instanceof DataProductMetadataPK)) {
+        if (!(other instanceof DataReplicaMetadataPK)) {
             return false;
         }
-        DataProductMetadataPK castOther = (DataProductMetadataPK) other;
-        return this.productUri.equals(castOther.productUri) && this.metadataKey.equals(castOther.metadataKey);
+        DataReplicaMetadataPK castOther = (DataReplicaMetadataPK) other;
+        return this.replicaId.equals(castOther.replicaId) && this.metadataKey.equals(castOther.metadataKey);
     }
 
     public int hashCode() {
         final int prime = 31;
         int hash = 17;
-        hash = hash * prime + this.productUri.hashCode();
+        hash = hash * prime + this.replicaId.hashCode();
         hash = hash * prime + this.metadataKey.hashCode();
 
         return hash;

@@ -41,17 +41,17 @@ public class QueryConstants {
     public static final String FIND_ALL_USER_PROFILES_BY_GATEWAY_ID =
             "SELECT u FROM UserProfileEntity u " + "where u.gatewayId LIKE :" + GATEWAY_ID + "";
 
-    public static final String FIND_GATEWAY_BY_INTERNAL_ID = "SELECT g FROM TenantGatewayEntity g "
+    public static final String FIND_GATEWAY_BY_INTERNAL_ID = "SELECT g FROM GatewayEntity g "
             + "where g.airavataInternalGatewayId LIKE :" + AIRAVATA_INTERNAL_GATEWAY_ID;
 
     public static final String FIND_DUPLICATE_GATEWAY =
-            "SELECT g FROM TenantGatewayEntity g " + "where g.gatewayApprovalStatus IN :"
+            "SELECT g FROM GatewayEntity g " + "where g.gatewayApprovalStatus IN :"
                     + GATEWAY_APPROVAL_STATUS + " " + "and (g.gatewayId LIKE :"
                     + GATEWAY_ID + " " + "     or g.gatewayName LIKE :"
                     + GATEWAY_NAME + " " + "     or g.gatewayUrl LIKE :"
                     + GATEWAY_URL + " " + "    )";
 
-    public static final String GET_ALL_GATEWAYS = "SELECT g FROM TenantGatewayEntity g";
+    public static final String GET_ALL_GATEWAYS = "SELECT g FROM GatewayEntity g";
 
     public static final String GET_USER_GATEWAYS =
             "SELECT g from GatewayEntity g " + "where g.requesterUsername LIKE :" + REQUESTER_USERNAME + "";

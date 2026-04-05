@@ -17,7 +17,7 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.storage.grpc;
+package org.apache.airavata.research.grpc;
 
 import io.grpc.stub.StreamObserver;
 import java.util.List;

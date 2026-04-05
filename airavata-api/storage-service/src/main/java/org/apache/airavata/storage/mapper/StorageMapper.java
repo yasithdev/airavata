@@ -28,8 +28,6 @@ import org.apache.airavata.model.data.movement.proto.GridFTPDataMovement;
 import org.apache.airavata.model.data.movement.proto.LOCALDataMovement;
 import org.apache.airavata.model.data.movement.proto.SCPDataMovement;
 import org.apache.airavata.model.data.movement.proto.UnicoreDataMovement;
-import org.apache.airavata.model.data.replica.proto.DataProductModel;
-import org.apache.airavata.model.data.replica.proto.DataReplicaLocationModel;
 import org.apache.airavata.storage.model.*;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -52,16 +50,6 @@ public interface StorageMapper extends CommonMapperConversions {
 
     @Mapping(source = "storageResourceId", target = "resourceId")
     DataMovementInterfaceEntity dataMovementInterfaceToEntity(DataMovementInterface model);
-
-    // --- DataProductModel ---
-    DataProductModel dataProductToModel(DataProductEntity entity);
-
-    DataProductEntity dataProductToEntity(DataProductModel model);
-
-    // --- DataReplicaLocationModel ---
-    DataReplicaLocationModel dataReplicaToModel(DataReplicaLocationEntity entity);
-
-    DataReplicaLocationEntity dataReplicaToEntity(DataReplicaLocationModel model);
 
     // --- StoragePreference ---
     StoragePreference storagePrefToModel(StoragePreferenceEntity entity);

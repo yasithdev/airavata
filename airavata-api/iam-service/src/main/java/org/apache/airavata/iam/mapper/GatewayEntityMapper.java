@@ -21,9 +21,7 @@ package org.apache.airavata.iam.mapper;
 
 import org.apache.airavata.iam.model.GatewayEntity;
 import org.apache.airavata.iam.model.GatewayUsageReportingCommandEntity;
-import org.apache.airavata.iam.model.QueueStatusEntity;
 import org.apache.airavata.mapper.CommonMapperConversions;
-import org.apache.airavata.model.status.proto.QueueStatusModel;
 import org.apache.airavata.model.workspace.proto.Gateway;
 import org.apache.airavata.model.workspace.proto.GatewayUsageReportingCommand;
 import org.mapstruct.Mapper;
@@ -42,11 +40,6 @@ public interface GatewayEntityMapper extends CommonMapperConversions {
     Gateway gatewayToModel(GatewayEntity entity);
 
     GatewayEntity gatewayToEntity(Gateway model);
-
-    // --- QueueStatus ---
-    QueueStatusModel queueStatusToModel(QueueStatusEntity entity);
-
-    QueueStatusEntity queueStatusToEntity(QueueStatusModel model);
 
     // --- GatewayUsageReportingCommand ---
     GatewayUsageReportingCommand gatewayUsageReportingCommandToModel(GatewayUsageReportingCommandEntity entity);

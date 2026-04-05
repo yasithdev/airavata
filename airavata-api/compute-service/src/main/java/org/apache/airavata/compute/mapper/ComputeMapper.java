@@ -42,6 +42,7 @@ import org.apache.airavata.model.appcatalog.parser.proto.Parser;
 import org.apache.airavata.model.appcatalog.parser.proto.ParserInput;
 import org.apache.airavata.model.appcatalog.parser.proto.ParserOutput;
 import org.apache.airavata.model.appcatalog.parser.proto.ParsingTemplate;
+import org.apache.airavata.model.status.proto.QueueStatusModel;
 import org.apache.airavata.model.appcatalog.userresourceprofile.proto.UserComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.userresourceprofile.proto.UserResourceProfile;
 import org.apache.airavata.model.application.io.proto.InputDataObjectType;
@@ -190,4 +191,9 @@ public interface ComputeMapper extends CommonMapperConversions {
     UnicoreJobSubmission unicoreSubmissionToModel(UnicoreSubmissionEntity entity);
 
     UnicoreSubmissionEntity unicoreSubmissionToEntity(UnicoreJobSubmission model);
+
+    // --- QueueStatus ---
+    QueueStatusModel queueStatusToModel(QueueStatusEntity entity);
+
+    QueueStatusEntity queueStatusToEntity(QueueStatusModel model);
 }

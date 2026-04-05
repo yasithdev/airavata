@@ -45,6 +45,9 @@ management:
     health:
       show-details: always
 
+airavata.cors:
+  allowed-origins: "*"
+
 airavata.security:
   openid-url: http://localhost:18080/realms/default
 

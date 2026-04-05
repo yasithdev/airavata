@@ -17,8 +17,19 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.iam.grpc;
+package org.apache.airavata.interfaces;
 
-import org.apache.airavata.api.userprofile.UserProfileServiceGrpc;
+import java.util.List;
+import org.apache.airavata.model.status.proto.QueueStatusModel;
 
-public class UserProfileGrpcHandler extends UserProfileServiceGrpc.UserProfileServiceImplBase {}
+/**
+ * Registry operations for batch queue status tracking on compute hosts.
+ */
+public interface QueueStatusRegistry {
+
+    QueueStatusModel getQueueStatus(String hostName, String queueName) throws Exception;
+
+    void registerQueueStatuses(List<QueueStatusModel> queueStatuses) throws Exception;
+
+    List<QueueStatusModel> getLatestQueueStatuses() throws Exception;
+}

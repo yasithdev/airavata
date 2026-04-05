@@ -17,20 +17,30 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.storage.model;
+package org.apache.airavata.research.model;
 
+import jakarta.persistence.*;
 import java.io.Serializable;
 
 /**
- * The primary key class for the data_replica_metadata database table.
+ * The persistent class for the data_replica_metadata database table.
  */
-public class DataReplicaMetadataPK implements Serializable {
+@Entity
+@Table(name = "DATA_REPLICA_METADATA")
+@IdClass(DataReplicaMetadataPK.class)
+public class DataReplicaMetadataEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
+    @Id
+    @Column(name = "REPLICA_ID")
     private String replicaId;
+
+    @Id
+    @Column(name = "METADATA_KEY")
     private String metadataKey;
 
-    public DataReplicaMetadataPK() {}
+    @Column(name = "METADATA_VALUE")
+    private String metadataValue;
 
     public String getReplicaId() {
         return replicaId;
@@ -48,23 +58,11 @@ public class DataReplicaMetadataPK implements Serializable {
         this.metadataKey = metadataKey;
     }
 
-    public boolean equals(Object other) {
-        if (this == other) {
-            return true;
-        }
-        if (!(other instanceof DataReplicaMetadataPK)) {
-            return false;
-        }
-        DataReplicaMetadataPK castOther = (DataReplicaMetadataPK) other;
-        return this.replicaId.equals(castOther.replicaId) && this.metadataKey.equals(castOther.metadataKey);
+    public String getMetadataValue() {
+        return metadataValue;
     }
 
-    public int hashCode() {
-        final int prime = 31;
-        int hash = 17;
-        hash = hash * prime + this.replicaId.hashCode();
-        hash = hash * prime + this.metadataKey.hashCode();
-
-        return hash;
+    public void setMetadataValue(String metadataValue) {
+        this.metadataValue = metadataValue;
     }
 }

@@ -17,54 +17,54 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.orchestration.model;
+package org.apache.airavata.research.model;
 
 import java.io.Serializable;
 
 /**
- * The primary key class for the gateway_worker database table.
+ * The primary key class for the data_product_metadata database table.
  */
-public class GatewayWorkerPK implements Serializable {
+public class DataProductMetadataPK implements Serializable {
     // default serial version id, required for serializable classes.
     private static final long serialVersionUID = 1L;
 
-    private String gatewayId;
-    private String userName;
+    private String productUri;
+    private String metadataKey;
 
-    public GatewayWorkerPK() {}
+    public DataProductMetadataPK() {}
 
-    public String getGatewayId() {
-        return gatewayId;
+    public String getProductUri() {
+        return productUri;
     }
 
-    public void setGatewayId(String gatewayId) {
-        this.gatewayId = gatewayId;
+    public void setProductUri(String productUri) {
+        this.productUri = productUri;
     }
 
-    public String getUserName() {
-        return userName;
+    public String getMetadataKey() {
+        return metadataKey;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setMetadataKey(String metadataKey) {
+        this.metadataKey = metadataKey;
     }
 
     public boolean equals(Object other) {
         if (this == other) {
             return true;
         }
-        if (!(other instanceof GatewayWorkerPK)) {
+        if (!(other instanceof DataProductMetadataPK)) {
             return false;
         }
-        GatewayWorkerPK castOther = (GatewayWorkerPK) other;
-        return this.gatewayId.equals(castOther.gatewayId) && this.userName.equals(castOther.userName);
+        DataProductMetadataPK castOther = (DataProductMetadataPK) other;
+        return this.productUri.equals(castOther.productUri) && this.metadataKey.equals(castOther.metadataKey);
     }
 
     public int hashCode() {
         final int prime = 31;
         int hash = 17;
-        hash = hash * prime + this.gatewayId.hashCode();
-        hash = hash * prime + this.userName.hashCode();
+        hash = hash * prime + this.productUri.hashCode();
+        hash = hash * prime + this.metadataKey.hashCode();
 
         return hash;
     }

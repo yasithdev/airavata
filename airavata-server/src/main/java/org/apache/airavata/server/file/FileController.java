@@ -19,22 +19,27 @@
 */
 package org.apache.airavata.server.file;
 
+import com.linecorp.armeria.common.HttpResponse;
+import com.linecorp.armeria.common.HttpStatus;
+import com.linecorp.armeria.common.MediaType;
+import com.linecorp.armeria.common.MediaTypeNames;
+import com.linecorp.armeria.common.multipart.MultipartFile;
+import com.linecorp.armeria.server.annotation.Consumes;
+import com.linecorp.armeria.server.annotation.Get;
+import com.linecorp.armeria.server.annotation.Param;
+import com.linecorp.armeria.server.annotation.Post;
+import com.linecorp.armeria.server.annotation.ProducesJson;
 import java.io.File;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import org.apache.airavata.api.file.FileUploadResponse;
 import org.apache.airavata.orchestration.service.AirvataFileService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.stereotype.Component;
 
-@RestController
-@RequestMapping("/api/v1/files")
+@Component
 public class FileController {
 
     private static final Logger logger = LoggerFactory.getLogger(FileController.class);
@@ -42,8 +47,9 @@ public class FileController {
     @Autowired
     private AirvataFileService fileService;
 
-    @GetMapping("/list/{live}/{processId}")
-    public Object listFilesRoot(@PathVariable String live, @PathVariable String processId) throws Exception {
+    @Get("/list/{live}/{processId}")
+    @ProducesJson
+    public Object listFilesRoot(@Param String live, @Param String processId) throws Exception {
         String relPath = "/";
         try {
             return fileService.listDir(processId, relPath);
@@ -53,8 +59,9 @@ public class FileController {
         }
     }
 
-    @GetMapping("/list/{live}/{processId}/{*subPath}")
-    public Object listFiles(@PathVariable String live, @PathVariable String processId, @PathVariable String subPath)
+    @Get("regex:^/list/(?<live>[^/]+)/(?<processId>[^/]+)/(?<subPath>.+)$")
+    @ProducesJson
+    public Object listFiles(@Param String live, @Param String processId, @Param String subPath)
             throws Exception {
         String relPath = subPath.startsWith("/") ? subPath : "/" + subPath;
         try {
@@ -70,44 +77,51 @@ public class FileController {
         }
     }
 
-    @GetMapping("/download/{live}/{processId}/{*subPath}")
-    public ResponseEntity downloadFile(
-            @PathVariable String live, @PathVariable String processId, @PathVariable String subPath) {
+    @Get("regex:^/download/(?<live>[^/]+)/(?<processId>[^/]+)/(?<subPath>.+)$")
+    public HttpResponse downloadFile(@Param String live, @Param String processId, @Param String subPath) {
         String relPath = subPath.startsWith("/") ? subPath : "/" + subPath;
         String fileName = new File(relPath).getName();
-        Path localPath = null;
         try {
-            localPath = fileService.downloadFile(processId, relPath);
-            Resource resource = new UrlResource(localPath.toUri());
-            return ResponseEntity.ok()
-                    .header(HttpHeaders.CONTENT_DISPOSITION, String.format("attachment; filename=\"%s\"", fileName))
-                    .body(resource);
+            Path localPath = fileService.downloadFile(processId, relPath);
+            byte[] fileBytes = Files.readAllBytes(localPath);
+            return HttpResponse.builder()
+                    .ok()
+                    .header("Content-Disposition", String.format("attachment; filename=\"%s\"", fileName))
+                    .content(MediaType.OCTET_STREAM, fileBytes)
+                    .build();
         } catch (Exception e) {
             logger.error("Failed to download file {} from process {}", relPath, processId, e);
-            return ResponseEntity.internalServerError().body("An internal server error occurred: " + e.getMessage());
+            return HttpResponse.of(HttpStatus.INTERNAL_SERVER_ERROR, MediaType.PLAIN_TEXT_UTF_8,
+                    "An internal server error occurred: " + e.getMessage());
         }
     }
 
-    @PostMapping("/upload/{live}/{processId}/{*subPath}")
-    public ResponseEntity uploadFile(
-            @PathVariable String live,
-            @PathVariable String processId,
-            @PathVariable String subPath,
-            @RequestParam("file") MultipartFile file) {
+    @Post("regex:^/upload/(?<live>[^/]+)/(?<processId>[^/]+)/(?<subPath>.+)$")
+    @Consumes(MediaTypeNames.MULTIPART_FORM_DATA)
+    @ProducesJson
+    public HttpResponse uploadFile(
+            @Param String live,
+            @Param String processId,
+            @Param String subPath,
+            @Param MultipartFile file) {
         String relPath = subPath.startsWith("/") ? subPath : "/" + subPath;
         try {
-            String name = file.getName();
-            fileService.uploadFile(processId, relPath, file.getInputStream(), name, file.getSize());
-            return ResponseEntity.ok(FileUploadResponse.newBuilder()
+            String name = file.filename();
+            long size = Files.size(file.path());
+            fileService.uploadFile(processId, relPath, Files.newInputStream(file.path()), name, size);
+            String contentType = file.headers().contentType() != null
+                    ? file.headers().contentType().toString()
+                    : "";
+            return HttpResponse.ofJson(FileUploadResponse.newBuilder()
                     .setName(name)
                     .setUri(relPath)
-                    .setType(file.getContentType() != null ? file.getContentType() : "")
-                    .setSize(file.getSize())
+                    .setType(contentType)
+                    .setSize(size)
                     .build());
-
         } catch (Exception e) {
             logger.error("Failed to upload file {} to process {}", relPath, processId, e);
-            return ResponseEntity.internalServerError().body("An internal server error occurred: " + e.getMessage());
+            return HttpResponse.of(HttpStatus.INTERNAL_SERVER_ERROR, MediaType.PLAIN_TEXT_UTF_8,
+                    "An internal server error occurred: " + e.getMessage());
         }
     }
 }

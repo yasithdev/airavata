@@ -26,12 +26,14 @@ import java.util.stream.Collectors;
 import org.apache.airavata.db.DBInitializer;
 import org.apache.airavata.exception.ApplicationSettingsException;
 import org.apache.airavata.interfaces.SharingFacade;
+import org.apache.airavata.interfaces.SharingProvider;
 import org.apache.airavata.sharing.model.*;
 import org.apache.airavata.sharing.registry.models.proto.GroupCardinality;
 import org.apache.airavata.sharing.registry.models.proto.GroupChildType;
 import org.apache.airavata.sharing.registry.models.proto.GroupType;
 import org.apache.airavata.sharing.registry.models.proto.SearchCriteria;
 import org.apache.airavata.sharing.registry.models.proto.SharingType;
+import org.apache.airavata.sharing.registry.models.proto.UserGroup;
 import org.apache.airavata.sharing.repository.*;
 import org.apache.airavata.sharing.util.DBConstants;
 import org.apache.airavata.sharing.util.SharingRegistryDBInitConfig;
@@ -41,7 +43,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
-public class SharingService implements SharingFacade {
+public class SharingService implements SharingFacade, SharingProvider {
     private static final Logger logger = LoggerFactory.getLogger(SharingService.class);
 
     public static String OWNER_PERMISSION_NAME = "OWNER";
@@ -215,6 +217,7 @@ public class SharingService implements SharingFacade {
      *
      * @param userId
      */
+    @Override
     public boolean isUserExists(String domainId, String userId) throws SharingRegistryException {
         try {
             UserPK userPK = new UserPK();
@@ -604,7 +607,7 @@ public class SharingService implements SharingFacade {
         }
     }
 
-    public List<UserGroupEntity> getAllMemberGroupsForUser(String domainId, String userId)
+    public List<UserGroupEntity> getAllMemberGroupEntitiesForUser(String domainId, String userId)
             throws SharingRegistryException {
         try {
             GroupMembershipRepository groupMembershipRepository = new GroupMembershipRepository();
@@ -1350,5 +1353,70 @@ public class SharingService implements SharingFacade {
         return searchEntities(domainId, userId, filters, offset, limit).stream()
                 .map(EntityEntity::getEntityId)
                 .collect(Collectors.toList());
+    }
+
+    // ── SharingProvider adapter methods ──────────────────────────────────────────
+
+    @Override
+    public String createUser(String userId, String domainId, String userName) throws Exception {
+        UserEntity user = new UserEntity();
+        user.setUserId(userId);
+        user.setDomainId(domainId);
+        user.setCreatedTime(System.currentTimeMillis());
+        user.setUpdatedTime(System.currentTimeMillis());
+        user.setUserName(userName);
+        return createUser(user);
+    }
+
+    @Override
+    public String createGroup(UserGroup group) throws Exception {
+        UserGroupEntity entity = new UserGroupEntity();
+        entity.setGroupId(group.getGroupId());
+        entity.setDomainId(group.getDomainId());
+        entity.setGroupCardinality(group.getGroupCardinality().name());
+        entity.setCreatedTime(group.getCreatedTime());
+        entity.setUpdatedTime(group.getUpdatedTime());
+        entity.setName(group.getName());
+        entity.setDescription(group.getDescription());
+        entity.setOwnerId(group.getOwnerId());
+        entity.setGroupType(group.getGroupType().name());
+        createGroup(entity);
+        return entity.getGroupId();
+    }
+
+    @Override
+    public List<UserGroup> getAllMemberGroupsForUser(String domainId, String userId) throws Exception {
+        List<UserGroupEntity> entities = getAllMemberGroupEntitiesForUser(domainId, userId);
+        return entities.stream().map(this::toProto).collect(Collectors.toList());
+    }
+
+    private UserGroup toProto(UserGroupEntity entity) {
+        UserGroup.Builder builder = UserGroup.newBuilder()
+                .setGroupId(entity.getGroupId())
+                .setDomainId(entity.getDomainId())
+                .setName(entity.getName() != null ? entity.getName() : "")
+                .setOwnerId(entity.getOwnerId() != null ? entity.getOwnerId() : "");
+        if (entity.getDescription() != null) {
+            builder.setDescription(entity.getDescription());
+        }
+        if (entity.getGroupType() != null) {
+            try {
+                builder.setGroupType(GroupType.valueOf(entity.getGroupType()));
+            } catch (IllegalArgumentException ignored) {
+            }
+        }
+        if (entity.getGroupCardinality() != null) {
+            try {
+                builder.setGroupCardinality(GroupCardinality.valueOf(entity.getGroupCardinality()));
+            } catch (IllegalArgumentException ignored) {
+            }
+        }
+        if (entity.getCreatedTime() != null) {
+            builder.setCreatedTime(entity.getCreatedTime());
+        }
+        if (entity.getUpdatedTime() != null) {
+            builder.setUpdatedTime(entity.getUpdatedTime());
+        }
+        return builder.build();
     }
 }

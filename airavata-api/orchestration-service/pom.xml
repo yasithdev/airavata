@@ -155,7 +155,7 @@ under the License.
                         <goals><goal>generate</goal></goals>
                         <phase>generate-sources</phase>
                         <configuration>
-                            <protocVersion>3.25.8</protocVersion>
+                            <protocVersion>4.29.5</protocVersion>
                             <sourceDirectories>
                                 <sourceDirectory>${project.basedir}/src/main/proto</sourceDirectory>
                             </sourceDirectories>

@@ -27,8 +27,8 @@ import org.apache.airavata.model.appcatalog.storageresource.proto.StorageResourc
 import org.apache.airavata.model.data.movement.proto.DataMovementInterface;
 import org.apache.airavata.model.data.replica.proto.DataProductModel;
 import org.apache.airavata.model.data.replica.proto.DataReplicaLocationModel;
-import org.apache.airavata.storage.repository.DataProductRepository;
-import org.apache.airavata.storage.repository.DataReplicaLocationRepository;
+import org.apache.airavata.research.repository.DataProductRepository;
+import org.apache.airavata.research.repository.DataReplicaLocationRepository;
 import org.apache.airavata.storage.repository.StorageResourceRepository;
 import org.springframework.stereotype.Service;
 

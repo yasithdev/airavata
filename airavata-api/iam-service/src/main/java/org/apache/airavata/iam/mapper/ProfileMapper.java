@@ -19,8 +19,8 @@
 */
 package org.apache.airavata.iam.mapper;
 
+import org.apache.airavata.iam.model.GatewayEntity;
 import org.apache.airavata.iam.model.GatewayGroupsEntity;
-import org.apache.airavata.iam.model.TenantGatewayEntity;
 import org.apache.airavata.iam.model.UserProfileEntity;
 import org.apache.airavata.mapper.CommonMapperConversions;
 import org.apache.airavata.model.appcatalog.gatewaygroups.proto.GatewayGroups;
@@ -41,9 +41,9 @@ public interface ProfileMapper extends CommonMapperConversions {
     UserProfileEntity userProfileToEntity(UserProfile model);
 
     // --- Gateway (tenant profile) ---
-    Gateway gatewayToModel(TenantGatewayEntity entity);
+    Gateway gatewayToModel(GatewayEntity entity);
 
-    TenantGatewayEntity gatewayToEntity(Gateway model);
+    GatewayEntity gatewayToEntity(Gateway model);
 
     // --- GatewayGroups ---
     GatewayGroups gatewayGroupsToModel(GatewayGroupsEntity entity);

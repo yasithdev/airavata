@@ -23,7 +23,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 import org.apache.airavata.iam.repository.GatewayGroupsRepository;
 import org.apache.airavata.iam.repository.GatewayRepository;
-import org.apache.airavata.iam.repository.QueueStatusRepository;
 import org.apache.airavata.iam.repository.UserProfileRepository;
 import org.apache.airavata.interfaces.AppCatalogException;
 import org.apache.airavata.interfaces.GatewayRegistry;
@@ -31,7 +30,6 @@ import org.apache.airavata.interfaces.GwyResourceProfile;
 import org.apache.airavata.interfaces.RegistryException;
 import org.apache.airavata.model.appcatalog.gatewaygroups.proto.GatewayGroups;
 import org.apache.airavata.model.appcatalog.gatewayprofile.proto.GatewayResourceProfile;
-import org.apache.airavata.model.status.proto.QueueStatusModel;
 import org.apache.airavata.model.user.proto.UserProfile;
 import org.apache.airavata.model.workspace.proto.Gateway;
 import org.slf4j.Logger;
@@ -46,7 +44,6 @@ public class GatewayRegistryHandler implements GatewayRegistry {
     private static final Logger logger = LoggerFactory.getLogger(GatewayRegistryHandler.class);
 
     private final GatewayRepository gatewayRepository = new GatewayRepository();
-    private final QueueStatusRepository queueStatusRepository = new QueueStatusRepository();
     private final GatewayGroupsRepository gatewayGroupsRepository = new GatewayGroupsRepository();
     private final UserProfileRepository userProfileRepository = new UserProfileRepository();
 
@@ -266,40 +263,6 @@ public class GatewayRegistryHandler implements GatewayRegistry {
     }
 
     @Override
-    public QueueStatusModel getQueueStatus(String hostName, String queueName) throws Exception {
-        try {
-            Optional<QueueStatusModel> optionalQueueStatusModel =
-                    queueStatusRepository.getQueueStatus(hostName, queueName);
-            logger.info("Executed and present " + optionalQueueStatusModel.isPresent());
-            if (optionalQueueStatusModel.isPresent()) {
-                return optionalQueueStatusModel.get();
-            } else {
-                return QueueStatusModel.newBuilder()
-                        .setHostName(hostName)
-                        .setQueueName(queueName)
-                        .setQueueUp(false)
-                        .setRunningJobs(0)
-                        .setQueuedJobs(0)
-                        .setTime(0)
-                        .build();
-            }
-        } catch (RegistryException e) {
-            logger.error("Error while storing queue status models....", e);
-            throw new RegistryException("Error while storing queue status models.... : " + e.getMessage());
-        }
-    }
-
-    @Override
-    public void registerQueueStatuses(List<QueueStatusModel> queueStatuses) throws Exception {
-        try {
-            queueStatusRepository.createQueueStatuses(queueStatuses);
-        } catch (RegistryException e) {
-            logger.error("Error while storing queue status models....", e);
-            throw new RegistryException("Error while storing queue status models.... : " + e.getMessage());
-        }
-    }
-
-    @Override
     public void updateGatewayGroups(GatewayGroups gatewayGroups) throws Exception {
         try {
             if (!gatewayGroupsRepository.isExists(gatewayGroups.getGatewayId())) {
@@ -311,15 +274,6 @@ public class GatewayRegistryHandler implements GatewayRegistry {
         } catch (Exception e) {
             throw new RegistryException("Error while updating the GatewayGroups entry for gateway "
                     + gatewayGroups.getGatewayId() + ". More info: " + e.getMessage());
-        }
-    }
-
-    @Override
-    public List<QueueStatusModel> getLatestQueueStatuses() throws Exception {
-        try {
-            return queueStatusRepository.getLatestQueueStatuses();
-        } catch (RegistryException e) {
-            throw new RegistryException("Error while reading queue status models.... : " + e.getMessage());
         }
     }
 

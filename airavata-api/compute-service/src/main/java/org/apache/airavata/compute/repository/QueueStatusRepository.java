@@ -17,17 +17,17 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.iam.repository;
+package org.apache.airavata.compute.repository;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import org.apache.airavata.compute.mapper.ComputeMapper;
+import org.apache.airavata.compute.model.QueueStatusEntity;
 import org.apache.airavata.db.AbstractRepository;
 import org.apache.airavata.db.DBConstants;
 import org.apache.airavata.db.QueryConstants;
-import org.apache.airavata.iam.mapper.GatewayEntityMapper;
-import org.apache.airavata.iam.model.QueueStatusEntity;
 import org.apache.airavata.interfaces.RegistryException;
 import org.apache.airavata.model.status.proto.QueueStatusModel;
 import org.slf4j.Logger;
@@ -44,18 +44,18 @@ public class QueueStatusRepository extends AbstractRepository<QueueStatusModel, 
 
     @Override
     protected QueueStatusModel toModel(QueueStatusEntity entity) {
-        return GatewayEntityMapper.INSTANCE.queueStatusToModel(entity);
+        return ComputeMapper.INSTANCE.queueStatusToModel(entity);
     }
 
     @Override
     protected QueueStatusEntity toEntity(QueueStatusModel model) {
-        return GatewayEntityMapper.INSTANCE.queueStatusToEntity(model);
+        return ComputeMapper.INSTANCE.queueStatusToEntity(model);
     }
 
     public boolean createQueueStatuses(List<QueueStatusModel> queueStatusModels) throws RegistryException {
 
         for (QueueStatusModel queueStatusModel : queueStatusModels) {
-            QueueStatusEntity queueStatusEntity = GatewayEntityMapper.INSTANCE.queueStatusToEntity(queueStatusModel);
+            QueueStatusEntity queueStatusEntity = ComputeMapper.INSTANCE.queueStatusToEntity(queueStatusModel);
             execute(entityManager -> entityManager.merge(queueStatusEntity));
         }
 

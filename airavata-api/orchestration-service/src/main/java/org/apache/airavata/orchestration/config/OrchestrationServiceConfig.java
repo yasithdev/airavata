@@ -25,12 +25,5 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @ComponentScan(basePackages = "org.apache.airavata.orchestration")
-@EntityScan(
-        basePackages = {
-            "org.apache.airavata.orchestration",
-            "org.apache.airavata.workflow.model",
-            "org.apache.airavata.research.model",
-            "org.apache.airavata.research.model",
-            "org.apache.airavata.research.model"
-        })
+@EntityScan(basePackages = "org.apache.airavata.orchestration")
 public class OrchestrationServiceConfig {}

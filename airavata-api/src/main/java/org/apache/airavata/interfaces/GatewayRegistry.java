@@ -21,12 +21,11 @@ package org.apache.airavata.interfaces;
 
 import java.util.List;
 import org.apache.airavata.model.appcatalog.gatewaygroups.proto.GatewayGroups;
-import org.apache.airavata.model.status.proto.QueueStatusModel;
 import org.apache.airavata.model.user.proto.UserProfile;
 import org.apache.airavata.model.workspace.proto.Gateway;
 
 /**
- * Registry operations for gateways, gateway groups, users, and queue status.
+ * Registry operations for gateways, gateway groups, and users.
  */
 public interface GatewayRegistry {
 
@@ -58,11 +57,4 @@ public interface GatewayRegistry {
     void createGatewayGroups(GatewayGroups gatewayGroups) throws Exception;
 
     void updateGatewayGroups(GatewayGroups gatewayGroups) throws Exception;
-
-    // --- Queue status operations ---
-    QueueStatusModel getQueueStatus(String hostName, String queueName) throws Exception;
-
-    void registerQueueStatuses(List<QueueStatusModel> queueStatuses) throws Exception;
-
-    List<QueueStatusModel> getLatestQueueStatuses() throws Exception;
 }

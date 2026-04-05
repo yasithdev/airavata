@@ -17,7 +17,7 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.storage.repository;
+package org.apache.airavata.research.repository;
 
 import java.sql.Timestamp;
 import java.util.List;
@@ -27,9 +27,9 @@ import org.apache.airavata.interfaces.DataReplicaLocationInterface;
 import org.apache.airavata.interfaces.ReplicaCatalogException;
 import org.apache.airavata.model.data.replica.proto.DataProductModel;
 import org.apache.airavata.model.data.replica.proto.DataReplicaLocationModel;
-import org.apache.airavata.storage.mapper.StorageMapper;
-import org.apache.airavata.storage.model.DataProductEntity;
-import org.apache.airavata.storage.model.DataReplicaLocationEntity;
+import org.apache.airavata.research.mapper.ResearchMapper;
+import org.apache.airavata.research.model.DataProductEntity;
+import org.apache.airavata.research.model.DataReplicaLocationEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -46,12 +46,12 @@ public class DataReplicaLocationRepository
 
     @Override
     protected DataReplicaLocationModel toModel(DataReplicaLocationEntity entity) {
-        return StorageMapper.INSTANCE.dataReplicaToModel(entity);
+        return ResearchMapper.INSTANCE.dataReplicaToModel(entity);
     }
 
     @Override
     protected DataReplicaLocationEntity toEntity(DataReplicaLocationModel model) {
-        return StorageMapper.INSTANCE.dataReplicaToEntity(model);
+        return ResearchMapper.INSTANCE.dataReplicaToEntity(model);
     }
 
     @Override
@@ -81,7 +81,7 @@ public class DataReplicaLocationRepository
 
         String replicaId = dataReplicaLocationModel.getReplicaId();
         DataReplicaLocationEntity dataReplicaLocationEntity =
-                StorageMapper.INSTANCE.dataReplicaToEntity(dataReplicaLocationModel);
+                ResearchMapper.INSTANCE.dataReplicaToEntity(dataReplicaLocationModel);
 
         if (!isExists(replicaId)) {
             logger.debug("Checking if the Data Replica Location already exists");

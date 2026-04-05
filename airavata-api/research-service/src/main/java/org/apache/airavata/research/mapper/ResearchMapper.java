@@ -23,6 +23,8 @@ import org.apache.airavata.mapper.CommonMapperConversions;
 import org.apache.airavata.model.application.io.proto.InputDataObjectType;
 import org.apache.airavata.model.application.io.proto.OutputDataObjectType;
 import org.apache.airavata.model.commons.proto.ErrorModel;
+import org.apache.airavata.model.data.replica.proto.DataProductModel;
+import org.apache.airavata.model.data.replica.proto.DataReplicaLocationModel;
 import org.apache.airavata.model.experiment.proto.ExperimentModel;
 import org.apache.airavata.model.experiment.proto.ExperimentSummaryModel;
 import org.apache.airavata.model.status.proto.ExperimentStatus;
@@ -82,4 +84,14 @@ public interface ResearchMapper extends CommonMapperConversions {
     Notification notificationToModel(NotificationEntity entity);
 
     NotificationEntity notificationToEntity(Notification model);
+
+    // --- DataProductModel ---
+    DataProductModel dataProductToModel(DataProductEntity entity);
+
+    DataProductEntity dataProductToEntity(DataProductModel model);
+
+    // --- DataReplicaLocationModel ---
+    DataReplicaLocationModel dataReplicaToModel(DataReplicaLocationEntity entity);
+
+    DataReplicaLocationEntity dataReplicaToEntity(DataReplicaLocationModel model);
 }

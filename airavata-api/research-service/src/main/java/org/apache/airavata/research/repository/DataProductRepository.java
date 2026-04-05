@@ -17,7 +17,7 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.airavata.storage.repository;
+package org.apache.airavata.research.repository;
 
 import java.sql.Timestamp;
 import java.time.Duration;
@@ -31,8 +31,8 @@ import org.apache.airavata.interfaces.DataProductInterface;
 import org.apache.airavata.interfaces.ReplicaCatalogException;
 import org.apache.airavata.model.data.replica.proto.DataProductModel;
 import org.apache.airavata.model.data.replica.proto.DataProductType;
-import org.apache.airavata.storage.mapper.StorageMapper;
-import org.apache.airavata.storage.model.DataProductEntity;
+import org.apache.airavata.research.mapper.ResearchMapper;
+import org.apache.airavata.research.model.DataProductEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -50,12 +50,12 @@ public class DataProductRepository extends AbstractRepository<DataProductModel, 
 
     @Override
     protected DataProductModel toModel(DataProductEntity entity) {
-        return StorageMapper.INSTANCE.dataProductToModel(entity);
+        return ResearchMapper.INSTANCE.dataProductToModel(entity);
     }
 
     @Override
     protected DataProductEntity toEntity(DataProductModel model) {
-        return StorageMapper.INSTANCE.dataProductToEntity(model);
+        return ResearchMapper.INSTANCE.dataProductToEntity(model);
     }
 
     @Override
@@ -91,7 +91,7 @@ public class DataProductRepository extends AbstractRepository<DataProductModel, 
         }
 
         String productUri = dataProductModel.getProductUri();
-        DataProductEntity dataProductEntity = StorageMapper.INSTANCE.dataProductToEntity(dataProductModel);
+        DataProductEntity dataProductEntity = ResearchMapper.INSTANCE.dataProductToEntity(dataProductModel);
 
         if (dataProductEntity.getOwnerName() == null || dataProductEntity.getGatewayId() == null) {
             logger.error("Owner name and/or gateway ID is empty");

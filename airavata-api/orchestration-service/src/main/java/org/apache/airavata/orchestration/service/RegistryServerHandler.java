@@ -27,6 +27,7 @@ import org.apache.airavata.interfaces.AppCatalogRegistry;
 import org.apache.airavata.interfaces.ExperimentRegistry;
 import org.apache.airavata.interfaces.GatewayRegistry;
 import org.apache.airavata.interfaces.ProjectRegistry;
+import org.apache.airavata.interfaces.QueueStatusRegistry;
 import org.apache.airavata.interfaces.RegistryHandler;
 import org.apache.airavata.model.appcatalog.appdeployment.proto.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appdeployment.proto.ApplicationModule;
@@ -110,6 +111,9 @@ public class RegistryServerHandler implements RegistryHandler {
 
     @org.springframework.beans.factory.annotation.Autowired
     private GatewayRegistry gatewayRegistryHandler;
+
+    @org.springframework.beans.factory.annotation.Autowired
+    private QueueStatusRegistry queueStatusRegistryHandler;
 
     @PostConstruct
     public void registerAsGlobalHandler() {
@@ -1169,22 +1173,25 @@ public class RegistryServerHandler implements RegistryHandler {
         gatewayRegistryHandler.createGatewayGroups(gatewayGroups);
     }
 
-    @Override
-    public QueueStatusModel getQueueStatus(String hostName, String queueName) throws Exception {
-        return gatewayRegistryHandler.getQueueStatus(hostName, queueName);
-    }
-
-    @Override
-    public void registerQueueStatuses(List<QueueStatusModel> queueStatuses) throws Exception {
-        gatewayRegistryHandler.registerQueueStatuses(queueStatuses);
-    }
-
     // Additional gateway methods
     public void updateGatewayGroups(GatewayGroups gatewayGroups) throws Exception {
         gatewayRegistryHandler.updateGatewayGroups(gatewayGroups);
     }
 
+    // --- QueueStatusRegistry delegation ---
+
+    @Override
+    public QueueStatusModel getQueueStatus(String hostName, String queueName) throws Exception {
+        return queueStatusRegistryHandler.getQueueStatus(hostName, queueName);
+    }
+
+    @Override
+    public void registerQueueStatuses(List<QueueStatusModel> queueStatuses) throws Exception {
+        queueStatusRegistryHandler.registerQueueStatuses(queueStatuses);
+    }
+
+    @Override
     public List<QueueStatusModel> getLatestQueueStatuses() throws Exception {
-        return gatewayRegistryHandler.getLatestQueueStatuses();
+        return queueStatusRegistryHandler.getLatestQueueStatuses();
     }
 }
